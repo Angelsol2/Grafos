@@ -1,0 +1,78 @@
+package org.example;
+
+public class CaminosMinimos {
+
+    // Método para determinar caminos según el algoritmo de Floyd//
+    public String algoritmoFloyd(long[][] mAdy) {
+
+        int vertices = mAdy.length;
+        long[][] matrizAdyacencia = mAdy;
+
+        int[][] auxiliares = new int[vertices][vertices];
+
+        String cadena = "", caminitos = "";
+        int i, j, k;
+        long temporal1, temporal2, temporal3, temporal4, minimo;
+
+        for (i = 0; i < vertices; i++) {
+            for (j = 0; j < vertices; j++) {
+                auxiliares[i][j] = -1;
+            }
+        }
+
+        for (k = 0; k < vertices; k++) {
+            for (i = 0; i < vertices; i++) {
+                for (j = 0; j < vertices; j++) {
+
+                    temporal1 = matrizAdyacencia[i][j];
+                    temporal2 = matrizAdyacencia[i][k];
+                    temporal3 = matrizAdyacencia[k][j];
+                    temporal4 = temporal2 + temporal3;
+
+                    // Encontrando al mínimo
+                    minimo = Math.min(temporal1, temporal4);
+
+                    if (temporal1 != temporal4) {
+                        if (minimo == temporal4) {
+                            auxiliares[i][j] = k;
+                            matrizAdyacencia[i][j] = (long) minimo;
+                        }
+                    }
+                }
+            }
+        }
+
+        for (i = 0; i < vertices; i++) {
+            for (j = 0; j < vertices; j++) {
+                cadena += "[" + matrizAdyacencia[i][j] + "]";
+            }
+            cadena += "\n";
+        }
+
+        for (i = 0; i < vertices; i++) {
+            for (j = 0; j < vertices; j++) {
+
+                if (matrizAdyacencia[i][j] != 1000000000 && i != j) {
+
+                    String intermedios = obtenerRutaRecursiva(i, j, auxiliares);
+
+                    caminitos += "de (" + (i + 1) + "---->" + (j + 1) + ") irse por...(" + (i + 1) + ", " + intermedios + (j + 1) + ")\n";
+                }
+            }
+        }
+
+        return "LA MATRIZ DE CAMINOS MAS CORTOS ENTRE LOS DIFERENTES VERTICES ES \n" + cadena +
+                "\n LOS DIFERENTES CAMINOS MAS CORTOS ENTRE VERTICES SON:\n" + caminitos;
+    }
+
+    private String obtenerRutaRecursiva(int i, int j, int[][] auxiliares) {
+
+        if (auxiliares[i][j] == -1) {
+            return "";
+        } else {
+            int k = auxiliares[i][j];
+
+            return obtenerRutaRecursiva(i, k, auxiliares) + (k + 1) + ", " + obtenerRutaRecursiva(k, j, auxiliares);
+        }
+    }
+}
